@@ -10,19 +10,8 @@ export default function UserSync() {
   const [hasAttemptedSync, setHasAttemptedSync] = useState(false);
 
   useEffect(() => {
-    console.log("UserSync: isSignedIn =", isSignedIn, "userLoaded =", userLoaded, "user =", user ? "exists" : "null");
-    
     // Only proceed if we have authentication, user is loaded, and user data exists
     if (isSignedIn && userLoaded && user && user.id && !hasAttemptedSync) {
-      console.log("UserSync: ✅ All conditions met! Creating user...");
-      console.log("UserSync: User data:", {
-        clerkId: user.id,
-        email: user.emailAddresses[0]?.emailAddress || "",
-        fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
-        image: user.imageUrl || "",
-        username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
-      });
-
       setHasAttemptedSync(true);
 
       // Create or get user in Convex when signed in
@@ -32,20 +21,11 @@ export default function UserSync() {
         fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
         image: user.imageUrl || "",
         username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
-      })
-      .then((result) => {
-        console.log("UserSync: ✅ SUCCESS! User created/retrieved:", result);
-      })
-      .catch((error) => {
-        console.error("UserSync: ❌ ERROR creating user:", error);
+      }).catch((error) => {
+        console.error("Error creating user:", error);
         setHasAttemptedSync(false); // Allow retry on error
       });
-    } else if (isSignedIn && !userLoaded) {
-      console.log("UserSync: ⏳ Signed in but user data not loaded yet...");
-    } else if (isSignedIn && userLoaded && !user) {
-      console.log("UserSync: ⚠️ Signed in and loaded but no user object - this is unusual!");
     } else if (!isSignedIn) {
-      console.log("UserSync: ❌ Not signed in");
       setHasAttemptedSync(false); // Reset for next sign in
     }
   }, [isSignedIn, userLoaded, user, createOrGetUser, hasAttemptedSync]);
