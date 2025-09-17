@@ -62,8 +62,8 @@ if (!webhookSecret) {
             } catch (error) {
                 console.log("Error creating user:", error);
                 return new Response("Error creating user", { status: 500 });
+            }
         }
-    }
 
         return new Response("Webhook processed successfully", { status: 200});
     }),
