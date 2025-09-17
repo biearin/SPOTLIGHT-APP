@@ -1,11 +1,12 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "convex/react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { styles } from "../../styles/auth.styles";
 
 export default function Index() {
-  const { signOut, user, isSignedIn } = useAuth();
+  const { signOut, isSignedIn } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
   
   // Query current user from Convex
   const currentUser = useQuery(api.users.getUserByClerkId, 
@@ -116,6 +117,9 @@ export default function Index() {
           </Text>
           <Text style={{ color: user ? "green" : "orange" }}>
             User Object: {user ? "✅ LOADED" : "⏳ LOADING/NULL"}
+          </Text>
+          <Text style={{ color: userLoaded ? "green" : "orange" }}>
+            User Loaded: {userLoaded ? "✅ YES" : "⏳ NO"}
           </Text>
           {user && (
             <View style={{ marginTop: 10 }}>

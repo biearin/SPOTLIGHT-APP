@@ -1,19 +1,20 @@
-import { useAuth } from "@clerk/clerk-expo";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import { useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { api } from "../convex/_generated/api";
 
 export default function UserSync() {
-  const { isSignedIn, user } = useAuth();
+  const { isSignedIn } = useAuth();
+  const { user, isLoaded: userLoaded } = useUser();
   const createOrGetUser = useMutation(api.users.createOrGetUser);
   const [hasAttemptedSync, setHasAttemptedSync] = useState(false);
 
   useEffect(() => {
-    console.log("UserSync: isSignedIn =", isSignedIn, "user =", user ? "exists" : "null");
+    console.log("UserSync: isSignedIn =", isSignedIn, "userLoaded =", userLoaded, "user =", user ? "exists" : "null");
     
-    // Only proceed if we have both authentication and user data
-    if (isSignedIn && user && user.id && !hasAttemptedSync) {
-      console.log("UserSync: ✅ Both auth and user data available! Creating user...");
+    // Only proceed if we have authentication, user is loaded, and user data exists
+    if (isSignedIn && userLoaded && user && user.id && !hasAttemptedSync) {
+      console.log("UserSync: ✅ All conditions met! Creating user...");
       console.log("UserSync: User data:", {
         clerkId: user.id,
         email: user.emailAddresses[0]?.emailAddress || "",
@@ -39,13 +40,15 @@ export default function UserSync() {
         console.error("UserSync: ❌ ERROR creating user:", error);
         setHasAttemptedSync(false); // Allow retry on error
       });
-    } else if (isSignedIn && !user) {
-      console.log("UserSync: ⏳ Signed in but waiting for user object to load...");
+    } else if (isSignedIn && !userLoaded) {
+      console.log("UserSync: ⏳ Signed in but user data not loaded yet...");
+    } else if (isSignedIn && userLoaded && !user) {
+      console.log("UserSync: ⚠️ Signed in and loaded but no user object - this is unusual!");
     } else if (!isSignedIn) {
       console.log("UserSync: ❌ Not signed in");
       setHasAttemptedSync(false); // Reset for next sign in
     }
-  }, [isSignedIn, user, createOrGetUser, hasAttemptedSync]);
+  }, [isSignedIn, userLoaded, user, createOrGetUser, hasAttemptedSync]);
 
   return null; // This component doesn't render anything
 }
