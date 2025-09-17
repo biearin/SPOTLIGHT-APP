@@ -19,20 +19,56 @@ export default function Index() {
   const createOrGetUser = useMutation(api.users.createOrGetUser);
   
   const handleManualUserCreation = async () => {
-    if (!user) return;
+    console.log("=== MANUAL USER CREATION TEST ===");
+    console.log("User object:", user);
+    console.log("isSignedIn:", isSignedIn);
     
-    console.log("Manual user creation triggered");
+    if (!user) {
+      console.error("❌ No user object available");
+      alert("No user object available. Please sign in first.");
+      return;
+    }
+    
+    const userData = {
+      clerkId: user.id,
+      email: user.emailAddresses[0]?.emailAddress || "",
+      fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+      image: user.imageUrl || "",
+      username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
+    };
+    
+    console.log("📝 Attempting to create user with data:", userData);
+    
     try {
-      const result = await createOrGetUser({
-        clerkId: user.id,
-        email: user.emailAddresses[0]?.emailAddress || "",
-        fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
-        image: user.imageUrl || "",
-        username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
-      });
-      console.log("Manual user creation result:", result);
+      const result = await createOrGetUser(userData);
+      console.log("✅ SUCCESS! User created/retrieved:", result);
+      alert(`SUCCESS! User created in Convex: ${result?.fullname || 'Unknown'}`);
     } catch (error) {
-      console.error("Manual user creation error:", error);
+      console.error("❌ ERROR creating user:", error);
+      alert(`ERROR: ${error.message || error}`);
+    }
+  };
+
+  const handleTestUserCreation = async () => {
+    console.log("=== TEST USER CREATION (NO CLERK) ===");
+    
+    const testUserData = {
+      clerkId: "test_user_" + Date.now(),
+      email: "test@example.com",
+      fullname: "Test User",
+      image: "https://via.placeholder.com/150",
+      username: "testuser",
+    };
+    
+    console.log("📝 Creating test user with data:", testUserData);
+    
+    try {
+      const result = await createOrGetUser(testUserData);
+      console.log("✅ SUCCESS! Test user created:", result);
+      alert(`SUCCESS! Test user created in Convex: ${result?.fullname}`);
+    } catch (error) {
+      console.error("❌ ERROR creating test user:", error);
+      alert(`ERROR: ${error.message || error}`);
     }
   };
 
@@ -119,7 +155,21 @@ export default function Index() {
           }}
         >
           <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
-            🔧 Manual User Creation Test
+            🔧 Create User from Clerk Data
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={handleTestUserCreation}
+          style={{ 
+            backgroundColor: "#F59E0B", 
+            padding: 15, 
+            borderRadius: 10,
+            marginTop: 10 
+          }}
+        >
+          <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
+            🧪 Create Test User (No Clerk)
           </Text>
         </TouchableOpacity>
 
