@@ -11,9 +11,10 @@ export default function UserSync() {
   useEffect(() => {
     console.log("UserSync: isSignedIn =", isSignedIn, "user =", user ? "exists" : "null");
     
-    // Wait for both isSignedIn and user to be available
+    // Only proceed if we have both authentication and user data
     if (isSignedIn && user && user.id && !hasAttemptedSync) {
-      console.log("UserSync: User data available, attempting to create/get user:", {
+      console.log("UserSync: ✅ Both auth and user data available! Creating user...");
+      console.log("UserSync: User data:", {
         clerkId: user.id,
         email: user.emailAddresses[0]?.emailAddress || "",
         fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
@@ -32,14 +33,17 @@ export default function UserSync() {
         username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
       })
       .then((result) => {
-        console.log("UserSync: Successfully created/got user:", result);
+        console.log("UserSync: ✅ SUCCESS! User created/retrieved:", result);
       })
       .catch((error) => {
-        console.error("UserSync: Error creating/getting user:", error);
+        console.error("UserSync: ❌ ERROR creating user:", error);
         setHasAttemptedSync(false); // Allow retry on error
       });
     } else if (isSignedIn && !user) {
-      console.log("UserSync: User is signed in but user object is not loaded yet, waiting...");
+      console.log("UserSync: ⏳ Signed in but waiting for user object to load...");
+    } else if (!isSignedIn) {
+      console.log("UserSync: ❌ Not signed in");
+      setHasAttemptedSync(false); // Reset for next sign in
     }
   }, [isSignedIn, user, createOrGetUser, hasAttemptedSync]);
 

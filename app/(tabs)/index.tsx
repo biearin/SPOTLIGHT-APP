@@ -83,6 +83,22 @@ export default function Index() {
     }
   };
 
+  const handleForceUserLoad = () => {
+    console.log("=== FORCE USER LOAD ===");
+    console.log("Current auth state:", { isSignedIn, user: user ? "exists" : "null" });
+    
+    if (isSignedIn && user) {
+      console.log("✅ User is already loaded!");
+      alert("User is already loaded!");
+    } else if (isSignedIn && !user) {
+      console.log("⏳ Signed in but user not loaded. This is the timing issue.");
+      alert("Signed in but user not loaded. Wait a moment and try the manual user creation.");
+    } else {
+      console.log("❌ Not signed in");
+      alert("Not signed in. Please sign in first.");
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={{ padding: 20 }}>
@@ -200,6 +216,20 @@ export default function Index() {
         >
           <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
             🧪 Create Test User (No Clerk)
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={handleForceUserLoad}
+          style={{ 
+            backgroundColor: "#8B5CF6", 
+            padding: 15, 
+            borderRadius: 10,
+            marginTop: 10 
+          }}
+        >
+          <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+            🔍 Check User Load Status
           </Text>
         </TouchableOpacity>
 
