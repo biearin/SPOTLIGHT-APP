@@ -72,12 +72,42 @@ export default function Index() {
     }
   };
 
+  const handleClearAuth = async () => {
+    console.log("=== CLEARING AUTHENTICATION ===");
+    try {
+      await signOut();
+      alert("Authentication cleared. Please sign in again.");
+    } catch (error) {
+      console.error("Error clearing auth:", error);
+      alert(`Error: ${error.message || error}`);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={{ padding: 20 }}>
         <Text style={{ color: "white", fontSize: 24, marginBottom: 20 }}>
           SPOTLIGHT Home
         </Text>
+        
+        {/* Authentication Status */}
+        <View style={{ marginBottom: 20, padding: 15, backgroundColor: "#1A1A1A", borderRadius: 10 }}>
+          <Text style={{ color: "white", fontSize: 18, marginBottom: 10 }}>
+            🔐 Authentication Status:
+          </Text>
+          <Text style={{ color: isSignedIn ? "green" : "red" }}>
+            Signed In: {isSignedIn ? "✅ YES" : "❌ NO"}
+          </Text>
+          <Text style={{ color: user ? "green" : "orange" }}>
+            User Object: {user ? "✅ LOADED" : "⏳ LOADING/NULL"}
+          </Text>
+          {user && (
+            <View style={{ marginTop: 10 }}>
+              <Text style={{ color: "white" }}>User ID: {user.id}</Text>
+              <Text style={{ color: "white" }}>Email: {user.emailAddresses[0]?.emailAddress || "N/A"}</Text>
+            </View>
+          )}
+        </View>
         
         {/* User Info */}
         <View style={{ marginBottom: 20 }}>
@@ -174,16 +204,16 @@ export default function Index() {
         </TouchableOpacity>
 
         <TouchableOpacity 
-          onPress={() => signOut()}
+          onPress={handleClearAuth}
           style={{ 
-            backgroundColor: "#4ADE80", 
+            backgroundColor: "#EF4444", 
             padding: 15, 
             borderRadius: 10,
             marginTop: 10 
           }}
         >
-          <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
-            Sign Out
+          <Text style={{ color: "white", textAlign: "center", fontWeight: "bold" }}>
+            🔄 Clear Auth & Sign Out
           </Text>
         </TouchableOpacity>
       </View>
