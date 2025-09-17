@@ -8,7 +8,17 @@ export default function UserSync() {
   const createOrGetUser = useMutation(api.users.createOrGetUser);
 
   useEffect(() => {
+    console.log("UserSync: isSignedIn =", isSignedIn, "user =", user ? "exists" : "null");
+    
     if (isSignedIn && user) {
+      console.log("UserSync: Attempting to create/get user with data:", {
+        clerkId: user.id,
+        email: user.emailAddresses[0]?.emailAddress || "",
+        fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+        image: user.imageUrl || "",
+        username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
+      });
+
       // Create or get user in Convex when signed in
       createOrGetUser({
         clerkId: user.id,
@@ -16,8 +26,12 @@ export default function UserSync() {
         fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
         image: user.imageUrl || "",
         username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
-      }).catch((error) => {
-        console.error("Error creating/getting user:", error);
+      })
+      .then((result) => {
+        console.log("UserSync: Successfully created/got user:", result);
+      })
+      .catch((error) => {
+        console.error("UserSync: Error creating/getting user:", error);
       });
     }
   }, [isSignedIn, user, createOrGetUser]);

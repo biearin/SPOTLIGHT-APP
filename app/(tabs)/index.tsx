@@ -14,6 +14,27 @@ export default function Index() {
   
   // Query all users from Convex
   const allUsers = useQuery(api.users.getAllUsers);
+  
+  // Mutation for manual user creation
+  const createOrGetUser = useMutation(api.users.createOrGetUser);
+  
+  const handleManualUserCreation = async () => {
+    if (!user) return;
+    
+    console.log("Manual user creation triggered");
+    try {
+      const result = await createOrGetUser({
+        clerkId: user.id,
+        email: user.emailAddresses[0]?.emailAddress || "",
+        fullname: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
+        image: user.imageUrl || "",
+        username: user.emailAddresses[0]?.emailAddress?.split("@")[0] || "user",
+      });
+      console.log("Manual user creation result:", result);
+    } catch (error) {
+      console.error("Manual user creation error:", error);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -89,12 +110,26 @@ export default function Index() {
         </View>
 
         <TouchableOpacity 
+          onPress={handleManualUserCreation}
+          style={{ 
+            backgroundColor: "#2DD4BF", 
+            padding: 15, 
+            borderRadius: 10,
+            marginTop: 20 
+          }}
+        >
+          <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
+            🔧 Manual User Creation Test
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
           onPress={() => signOut()}
           style={{ 
             backgroundColor: "#4ADE80", 
             padding: 15, 
             borderRadius: 10,
-            marginTop: 20 
+            marginTop: 10 
           }}
         >
           <Text style={{ color: "black", textAlign: "center", fontWeight: "bold" }}>
