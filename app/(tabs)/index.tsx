@@ -7,7 +7,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => signOut ()}>
-        <Text style={{ color: "white" }}>Signout</Text>
+        <Text style={{ color: "white" }}>bie lee</Text>
       </TouchableOpacity>
     </View>
   );
