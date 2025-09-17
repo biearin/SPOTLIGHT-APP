@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { api } from "../../convex/_generated/api";
 import { styles } from "../../styles/auth.styles";
